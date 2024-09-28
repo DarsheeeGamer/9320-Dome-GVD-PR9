@@ -46,15 +46,15 @@ while True:
         if arduino.is_open: # Check if Arduino is connected
             command = read_command(arduino)
             if command:
-                handle_arduino_command(command, music_player)
-                last_play_time = time.time()  # Update last_play_time
-
-                # Show that the Arduino sent the command
-                if command == "play":
+                if command == "play" and not song_playing:
+                    handle_arduino_command(command, music_player)
+                    song_playing = True
+                    last_play_time = time.time()  # Update last_play_time
                     print("Arduino sent 'play' command. Triggering song...")
-                elif command == "stop":
+                elif command == "stop" and song_playing:
+                    handle_arduino_command(command, music_player)
+                    song_playing = False
                     print("Arduino sent 'stop' command. Stopping song...")
-
         else:
             arduino = handle_evc9223_error()
             if arduino is None:
