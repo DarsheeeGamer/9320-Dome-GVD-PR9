@@ -1,11 +1,15 @@
 import time
 import os
 import random
+import logging
+import pygame
+import serial.tools.list_ports
+
 from helper.music import MusicPlayer
 from helper.serial import connect_to_arduino, read_command
 from helper.arduino_parser import handle_arduino_command
 from helper.logger import setup_logger
-from errors.error_COM_DISCONNECT import find_ch340_com_port
+from errors.error_COM_DISCONNECT import find_arduino_com_port
 from errors.error_COM_EVC9223_rstrt import handle_evc9223_error
 from errors.error_DEPENDENCY_P398 import handle_dependency_error
 
@@ -18,10 +22,12 @@ music_folder = "songs"  # Path to the folder containing your MP3 files
 setup_logger()
 
 # Find Arduino COM port
-arduino_port = find_ch340_com_port()
+arduino_port = find_arduino_com_port()
 if arduino_port is None:
     logging.error("Arduino COM port not found. Exiting...")
     exit()
+else:
+    logging.info(f"Arduino COM port set to: {arduino_port}")
 
 # Connect to Arduino
 arduino = connect_to_arduino(arduino_port)
@@ -42,6 +48,13 @@ while True:
             if command:
                 handle_arduino_command(command, music_player)
                 last_play_time = time.time()  # Update last_play_time
+
+                # Show that the Arduino sent the command
+                if command == "play":
+                    print("Arduino sent 'play' command. Triggering song...")
+                elif command == "stop":
+                    print("Arduino sent 'stop' command. Stopping song...")
+
         else:
             arduino = handle_evc9223_error()
             if arduino is None:
