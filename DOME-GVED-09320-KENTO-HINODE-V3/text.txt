@@ -25,7 +25,8 @@ void loop() {
   // Check for disturbance
   if (distance < thresholdDistance) {
     Serial.println("play"); // Send "play" command to PC
-    delay(500); // Delay to avoid multiple "play" commands
+  } else {
+    Serial.println("stop"); // Send "stop" command to PC if no disturbance 
   }
 
   delay(100); // Delay for smoother readings
