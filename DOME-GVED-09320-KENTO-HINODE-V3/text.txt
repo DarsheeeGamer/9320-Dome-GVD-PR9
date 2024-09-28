@@ -1,0 +1,32 @@
+#define TRIG_PIN 2    // Ultrasonic sensor trigger pin
+#define ECHO_PIN 3    // Ultrasonic sensor echo pin
+
+const int baudRate = 9600; // Serial communication baud rate
+const int thresholdDistance = 10; // Distance threshold in cm (adjust as needed)
+
+void setup() {
+  Serial.begin(baudRate); // Initialize serial communication for PC
+  pinMode(TRIG_PIN, OUTPUT);
+  pinMode(ECHO_PIN, INPUT);
+}
+
+void loop() {
+  long duration, distance;
+
+  // Measure distance
+  digitalWrite(TRIG_PIN, LOW);
+  delayMicroseconds(2);
+  digitalWrite(TRIG_PIN, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(TRIG_PIN, LOW);
+  duration = pulseIn(ECHO_PIN, HIGH);
+  distance = duration * 0.034 / 2; 
+
+  // Check for disturbance
+  if (distance < thresholdDistance) {
+    Serial.println("play"); // Send "play" command to PC
+    delay(500); // Delay to avoid multiple "play" commands
+  }
+
+  delay(100); // Delay for smoother readings
+}
